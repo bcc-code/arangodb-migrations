@@ -1,5 +1,7 @@
-const up = (db) => true;
-const down = (db) => true;
+import { Database } from "arangojs";
+
+const up  = async (_ : Database) : Promise<Boolean> => true;
+const down = async (_ : Database) : Promise<Boolean> => true;
 
 module.exports = {
   up,
