@@ -1,11 +1,12 @@
 import 'mocha'
-import { expect, assert } from 'chai';
+import { assert } from 'chai';
+import { Database } from "arangojs";
 import {
 	FilterAndSortFiles,
 	FileNameToRevNumber,
 	GetMigrationsAfterRev,
 	Migration,
-} from '../functions'
+} from '../src/functions'
 
 describe('migrations', async() => {
 	it('should properly convert file names into numbers', async() => {
@@ -82,8 +83,8 @@ describe('migrations', async() => {
 			},
 			{
 				migrations: new Map<number, Migration>([
-						[1, new Migration(null, null, 1)],
-						[2, new Migration(null, null, 2)],
+						[1, new Migration(async (_ : Database) => true, async (_ : Database) => true, 1)],
+						[2, new Migration(async (_ : Database) => true, async (_ : Database) => true, 2)],
 					]
 				),
 				rev: 99,
@@ -91,24 +92,21 @@ describe('migrations', async() => {
 			},
 			{
 				migrations: new Map<number, Migration>([
-						[1, new Migration(null, null, 1)],
-						[2, new Migration(null, null, 2)],
-						[3, new Migration(null, null, 3)],
-						[4, new Migration(null, null, 4)],
+						[1, new Migration(async (_ : Database) => true, async (_ : Database) => true, 1)],
+						[2, new Migration(async (_ : Database) => true, async (_ : Database) => true, 2)],
+						[3, new Migration(async (_ : Database) => true, async (_ : Database) => true, 3)],
+						[4, new Migration(async (_ : Database) => true, async (_ : Database) => true, 4)],
 					]
 				),
 				rev: 2,
-				out: [
-						new Migration(null, null, 3),
-						new Migration(null, null, 4),
-				],
+				out: [3,4],
 			},
 			{
 				migrations: new Map<number, Migration>([
-						[1, new Migration(null, null, 1)],
-						[2, new Migration(null, null, 2)],
-						[3, new Migration(null, null, 3)],
-						[4, new Migration(null, null, 4)],
+						[1, new Migration(async (_ : Database) => true, async (_ : Database) => true, 1)],
+						[2, new Migration(async (_ : Database) => true, async (_ : Database) => true, 2)],
+						[3, new Migration(async (_ : Database) => true, async (_ : Database) => true, 3)],
+						[4, new Migration(async (_ : Database) => true, async (_ : Database) => true, 4)],
 					]
 				),
 				rev: 7,
@@ -118,7 +116,10 @@ describe('migrations', async() => {
 
 		cases.forEach(c => {
 			let out = GetMigrationsAfterRev(c.migrations, c.rev)
-			assert.deepEqual(out, c.out);
+
+			let result = out.map((x) => x.targetRevision)
+
+			assert.deepEqual(result, c.out);
 		})
 	});
 });

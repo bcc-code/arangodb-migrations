@@ -47,7 +47,8 @@ const FilterAndSortFiles = (files: string[]) : string[] => {
 const GetMigrationsAfterRev = (migrations: Map<number, Migration>, revision: number) : Migration[] => {
 	return Array.from(migrations.keys()) // Take the keys
 	.filter(val => val > revision) // Remove any that are before `revision`
-	.map(val => migrations.get(val)) // Fetch the appropriate migrations
+	.map(val => migrations.get(val)!) // Fetch the appropriate migrations
+
 }
 
 const DropTsExt = ( name: string ) : string => name.replace(/\.ts$/, '');
