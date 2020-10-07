@@ -1,0 +1,11 @@
+{
+  "include": ["./src/*.ts", "./test_data/*.ts"],
+  "exclude": ["node-modules", "lib"],
+  "compilerOptions": {
+	  "outDir": "lib"
+  },
+  "strict": true,
+  "esModuleInterop": true,
+  "module": "CommonJS",
+  "target": "ES2017"
+}
