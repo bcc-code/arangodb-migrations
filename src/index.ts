@@ -5,7 +5,7 @@ import { Direction, DropTsExt, FilterAndSortFiles, Migration, FileNameToRevNumbe
 
 const COLLECTION = "migration_status";
 
-const Migrate = async (direction: Direction, arangoConfig: object, migrationPath: string) => {
+const Migrate = async (direction: Direction, db: Database, migrationPath: string) => {
 	if (!existsSync(migrationPath)) {
 		throw new Error(`Path "${migrationPath}" not found. Aborting`);
 	}
@@ -20,7 +20,6 @@ const Migrate = async (direction: Direction, arangoConfig: object, migrationPath
 		migrations.set(revNr, new Migration(up, down, revNr))
 	});
 
-	const db = new Database(arangoConfig);
 	const collection = db.collection(COLLECTION);
 
 	if (!(await collection.exists())) {
@@ -92,6 +91,12 @@ const Migrate = async (direction: Direction, arangoConfig: object, migrationPath
 	console.log(`Done, DB at revision ${current_version}`);
 }
 
+
+const MigrateWithConfig = async (direction: Direction, arangoConfig: object, migrationPath: string) => {
+	const db = new Database(arangoConfig);
+	return Migrate(direction, db, migrationPath)
+}
+
 /*
 // Example usage:
 const arangoConfig = {
@@ -108,5 +113,6 @@ Migrate(Direction.Down, arangoConfig, "./test_data");
 
 export {
 	Migrate,
+	MigrateWithConfig,
 	Direction,
 }
