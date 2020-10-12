@@ -30,7 +30,8 @@ const FileNameToRevNumber = (fn: string) : number => {
 }
 
 const FilterAndSortFiles = (files: string[]) : string[] => {
-	const filtered = files.filter((val) => val.substr(-2) == "ts")
+	// .js as we are looking for compiled files
+	const filtered = files.filter((val) => val.substr(-2) == "js")
 
 	// The normal sort does a string sort, we actually want an int sort
 	let ordered = filtered.map((fileName) => ({
@@ -51,11 +52,11 @@ const GetMigrationsAfterRev = (migrations: Map<number, Migration>, revision: num
 
 }
 
-const DropTsExt = ( name: string ) : string => name.replace(/\.ts$/, '');
+const DropJsExt = ( name: string ) : string => name.replace(/\.js$/, '');
 
 export {
 	Direction,
-	DropTsExt,
+	DropJsExt,
 	FilterAndSortFiles,
 	FileNameToRevNumber,
 	GetMigrationsAfterRev,

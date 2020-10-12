@@ -20,15 +20,15 @@ describe('migrations', async() => {
 				out: NaN,
 			},
 			{
-				in: "00000203.ts",
+				in: "00000203.js",
 				out: 203,
 			},
 			{
-				in: "29990.ts",
+				in: "29990.js",
 				out: 29990,
 			},
 			{
-				in: "29_change_value_to_990.ts",
+				in: "29_change_value_to_990.js",
 				out: 29,
 			}
 		]
@@ -46,20 +46,20 @@ describe('migrations', async() => {
 				out: [],
 			},
 			{
-				in: ["002.ts", "01.ts", "0003.ts", "100.ts"],
-				out: ["01.ts", "002.ts", "0003.ts", "100.ts"],
+				in: ["002.js", "01.js", "0003.js", "100.js"],
+				out: ["01.js", "002.js", "0003.js", "100.js"],
 			},
 			{
-				in: ["1.ts", "2.ts", "200"],
-				out: ["1.ts", "2.ts"],
+				in: ["1.js", "2.js", "200"],
+				out: ["1.js", "2.js"],
 			},
 			{
-				in: ["7.js", "1.log"],
+				in: ["7.ts", "1.log"],
 				out: [],
 			},
 			{
-				in: ["7", "1", "300.ts"],
-				out: ["300.ts"],
+				in: ["7", "1", "300.js"],
+				out: ["300.js"],
 			},
 		]
 
@@ -89,6 +89,15 @@ describe('migrations', async() => {
 				),
 				rev: 99,
 				out: [],
+			},
+			{
+				migrations: new Map<number, Migration>([
+						[1, new Migration(async (_ : Database) => true, async (_ : Database) => true, 1)],
+						[2, new Migration(async (_ : Database) => true, async (_ : Database) => true, 2)],
+					]
+				),
+				rev: 0,
+				out: [1,2],
 			},
 			{
 				migrations: new Map<number, Migration>([

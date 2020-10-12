@@ -1,7 +1,7 @@
 import { ArrayCursor } from "arangojs/cursor";
 import { existsSync, readdirSync } from 'fs';
 import { Database } from "arangojs";
-import { Direction, DropTsExt, FilterAndSortFiles, Migration, FileNameToRevNumber, MigrationStatus, GetMigrationsAfterRev } from './functions';
+import { Direction, DropJsExt, FilterAndSortFiles, Migration, FileNameToRevNumber, MigrationStatus, GetMigrationsAfterRev } from './functions';
 
 const COLLECTION = "migration_status";
 
@@ -15,7 +15,7 @@ const Migrate = async (direction: Direction, db: Database, migrationPath: string
 	const migrations = new Map<number, Migration>()
 
 	migrationFiles.forEach(async (fileName: string) => {
-		const { up, down } = await import(migrationPath+"/"+DropTsExt(fileName));
+		const { up, down } = await import(migrationPath+"/"+DropJsExt(fileName));
 		const revNr = FileNameToRevNumber(fileName);
 		migrations.set(revNr, new Migration(up, down, revNr))
 	});
