@@ -27,7 +27,7 @@ const Migrate = async (direction: Direction, db: Database, migrationPath: string
 
 		// I was so far unable to get this up with a relative path...
 		if (importPath.substr(0,1) != "/") {
-			importPath = process.env.PWD + "/" + importPath
+			importPath = process.cwd() + "/" + importPath
 		}
 
 		const { up, down } = await import(importPath);
