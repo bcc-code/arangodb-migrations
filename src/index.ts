@@ -1,7 +1,7 @@
 import { ArrayCursor } from "arangojs/cursor";
 import { existsSync, readdirSync } from 'fs';
 import { Database } from "arangojs";
-import { Direction, DropJsExt, FilterAndSortFiles, Migration, FileNameToRevNumber, MigrationStatus, GetMigrationsAfterRev } from './functions';
+import { Direction, DropExt, FilterAndSortFiles, Migration, FileNameToRevNumber, MigrationStatus, GetMigrationsAfterRev } from './functions';
 
 const COLLECTION = "migration_status";
 
@@ -10,15 +10,32 @@ const Migrate = async (direction: Direction, db: Database, migrationPath: string
 		throw new Error(`Path "${migrationPath}" not found. Aborting`);
 	}
 
-	const migrationFiles = FilterAndSortFiles(readdirSync(migrationPath))
+	let ext = 'js';
+
+	// If we are ruuning in test, it means that we are running in ts-node, so we can
+	// use .ts files directly
+	if (process.env.NODE_ENV == 'test') {
+		ext = 'ts';
+	}
+
+	const migrationFiles = FilterAndSortFiles(ext, readdirSync(migrationPath))
 
 	const migrations = new Map<number, Migration>()
 
-	migrationFiles.forEach(async (fileName: string) => {
-		const { up, down } = await import(migrationPath+"/"+DropJsExt(fileName));
+	let gatherMigrations = migrationFiles.map(async (fileName: string) => {
+		let importPath = migrationPath+"/"+DropExt(ext, fileName)
+
+		// I was so far unable to get this up with a relative path...
+		if (importPath.substr(0,1) != "/") {
+			importPath = process.env.PWD + "/" + importPath
+		}
+
+		const { up, down } = await import(importPath);
 		const revNr = FileNameToRevNumber(fileName);
 		migrations.set(revNr, new Migration(up, down, revNr))
 	});
+
+	await Promise.all(gatherMigrations)
 
 	const collection = db.collection(COLLECTION);
 

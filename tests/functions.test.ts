@@ -64,7 +64,7 @@ describe('migrations', async() => {
 		]
 
 		cases.forEach(c => {
-			let out = FilterAndSortFiles(c.in)
+			let out = FilterAndSortFiles('js', c.in)
 			assert.deepEqual(out, c.out);
 		})
 	});
