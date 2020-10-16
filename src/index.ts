@@ -39,7 +39,10 @@ const Migrate = async (direction: Direction, db: Database, migrationPath: string
 
 	if (!(await db.exists())) {
 		console.info("Database does not exist. Attempting to create");
-		db = await db.createDatabase(db.name);
+
+		// In arango you have to connect to an existing DB in order to be able to create a new one
+		const systemDb = db.database("_system");
+		db = await systemDb.createDatabase(db.name);
 	}
 
 	const collection = db.collection(COLLECTION);
