@@ -37,6 +37,11 @@ const Migrate = async (direction: Direction, db: Database, migrationPath: string
 
 	await Promise.all(gatherMigrations)
 
+	if (!(await db.exists())) {
+		console.info("Database does not exist. Attempting to create");
+		db = await db.createDatabase(db.name);
+	}
+
 	const collection = db.collection(COLLECTION);
 
 	if (!(await collection.exists())) {
@@ -82,7 +87,8 @@ const Migrate = async (direction: Direction, db: Database, migrationPath: string
 
 	} else if (direction == Direction.Down) {
 		if (current_version === 0) {
-			throw new Error("Can not migrate down past 0");
+			console.info("Can not migrate down past 0");
+			return
 		}
 
 		// Get migration for the version we are on because this one knows what to do
