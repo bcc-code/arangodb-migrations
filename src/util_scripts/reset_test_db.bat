@@ -1,14 +1,12 @@
 @echo off
 echo We are in the .bat script.
 
-:: Set the current directory to where the test data is located
-pushd ".\test\setup-tests\test_data"
-echo.Im at this directory: %CD%
-
 SET URL="%1"
 SET USERNAME="%2"
 SET DATABASE="%3"
 SET PASSWORD="%4"
+SET PATH_TO_TEST_DATA="%5"
+echo.PATH TO TEST DATA: %PATH_TO_TEST_DATA%
 
 arangorestore ^
   --server.database %DATABASE% ^
@@ -16,5 +14,5 @@ arangorestore ^
   --server.password %PASSWORD% ^
   --server.authentication true ^
   --server.endpoint %URL% ^
-  --input-directory %CD% ^
+  --input-directory %PATH_TO_TEST_DATA% ^
   --create-database true
