@@ -1,12 +1,12 @@
 {
-  "name": "@bcc-its/arango-migrate",
-  "version": "0.9.10",
+  "name": "@bcc-code/arango-migrate",
+  "version": "0.9.11",
   "description": "Migrate arango databases",
   "main": "lib/src/",
   "types": "lib/src/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/bcc-its/arangodb-migrations/"
+    "url": "https://github.com/bcc-code/arangodb-migrations/"
   },
   "scripts": {
     "test": "nyc mocha -r ts-node/register 'tests/**/*.ts'",
