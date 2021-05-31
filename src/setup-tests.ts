@@ -39,7 +39,7 @@ const importDB = async (config: ArangoDBConfig,deleteDatabaseFirst = false,updat
   let scriptExtension = (process.platform == 'win32') ? 'bat' : 'sh';
   let location = process.cwd();
   let bat =  require.resolve(`${location}/node_modules/@bcc-code/arango-migrate/src/util_scripts/reset_test_db.${scriptExtension}`);
-   bat = `${bat} ${config.url} ${config.auth.username} ${config.databaseName} ${config.auth.password} ${config.testDataPath}`
+   bat = `${bat} ${config.url} ${config.auth.username} ${config.databaseName} ${config.auth.password} "${config.testDataPath}"`
   // Execute the bat script
   try {
     let stdout = await execPromise(bat)
@@ -69,7 +69,7 @@ const importDB = async (config: ArangoDBConfig,deleteDatabaseFirst = false,updat
     let scriptExtension = (process.platform == 'win32') ? 'bat' : 'sh';
     let location = process.cwd();
     let bat =  require.resolve(`${location}/node_modules/@bcc-code/arango-migrate/src/util_scripts/update-test-data.${scriptExtension}`);
-     bat = `${bat} ${config.url} ${config.auth.username} ${config.databaseName} ${config.auth.password} ${config.testDataPath}`
+     bat = `${bat} ${config.url} ${config.auth.username} ${config.databaseName} ${config.auth.password} "${config.testDataPath}"`
     // Execute the bat script
     try {
       let stdout = await execPromise(bat)
