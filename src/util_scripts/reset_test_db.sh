@@ -18,6 +18,11 @@ URL="$1"
 USERNAME="$2"
 DATABASE="$3"
 PASSWORD="$4"
+RELATIVE_PATH_TO_TEST_DATA_WINDOWS_FORMAT="$5"
+RELATIVE_PATH_TO_TEST_DATA_LINUX_FORMAT = $RELATIVE_PATH_TO_TEST_DATA_WINDOWS_FORMAT | sed -e 's/\\/\//g'
+
+FULL_PATH_TO_TEST_DATA = "$(pwd)/$RELATIVE_PATH_TO_TEST_DATA_LINUX_FORMAT"
+echo Full path to test data: $FULL_PATH_TO_TEST_DATA
 
 arangorestore \
   --server.database "$DATABASE" \
@@ -25,6 +30,6 @@ arangorestore \
   --server.password "$PASSWORD" \
   --server.authentication true \
   --server.endpoint "$URL" \
-  --input-directory "$DIR/../test_data" \
+  --input-directory "$FULL_PATH_TO_TEST_DATA" \
   --create-database true
 

@@ -7,18 +7,25 @@
 stty -echo
 echo "We are in the .sh script."
 
-#Set the current directory to where the test data is located
-pushd "../test_data"
-echo Im at this directory: $PWD
+
+URL="$1"
+USERNAME="$2"
+DATABASE="$3"
+PASSWORD="$4"
+RELATIVE_PATH_TO_TEST_DATA_WINDOWS_FORMAT="$5"
+RELATIVE_PATH_TO_TEST_DATA_LINUX_FORMAT = $RELATIVE_PATH_TO_TEST_DATA_WINDOWS_FORMAT | sed -e 's/\\/\//g'
+
+FULL_PATH_TO_TEST_DATA = "$(pwd)/$RELATIVE_PATH_TO_TEST_DATA_LINUX_FORMAT"
+echo Full path to test data: $FULL_PATH_TO_TEST_DATA
 
 #Delete all the current files in the directory
-rm $PWD/*
+rm $FULL_PATH_TO_TEST_DATA/*
 
 arangodump \
-  --server.database "MEMBERS_TEST_TEMPLATE" \
-  --server.username "import_test_data" \
-  --server.password "root" \
+  --server.database "$DATABASE" \
+  --server.username "$USERNAME" \
+  --server.password "$PASSWORD" \
   --server.authentication "true" \
-  --server.endpoint "http+ssl://fee1cf9d321a.arangodb.cloud:8529/" \
-  --output-directory $PWD
+  --server.endpoint "$URL" \
+  --output-directory "$FULL_PATH_TO_TEST_DATA" \
 
