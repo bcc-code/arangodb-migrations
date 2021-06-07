@@ -1,5 +1,5 @@
 # arangodb-migrations
-Runs arango db scripts to bring the arangoDB instance up to the correct state in you're project.
+Runs arango db scripts to bring the arangoDB instance up to the correct state in your project.
 
 # Introduction
 This library aims to solve some common needs around ArangoDB like 
@@ -80,7 +80,6 @@ export {
   down,
 }
 ```
-
 
 
 
