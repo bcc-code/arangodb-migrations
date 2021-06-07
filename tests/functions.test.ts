@@ -6,7 +6,7 @@ import {
 	FileNameToRevNumber,
 	GetMigrationsAfterRev,
 	Migration,
-} from '../src/functions'
+} from '../src/migration-functions'
 
 describe('migrations', async() => {
 	it('should properly convert file names into numbers', async() => {
