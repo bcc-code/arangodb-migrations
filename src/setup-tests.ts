@@ -29,7 +29,7 @@ type foxx = {
 // to finishnpm
 const execPromise = promisify(exec);
 
-const importDB = async (config: ArangoDBConfig,deleteDatabaseFirst = false,updateFoxxServiceToDB:boolean = true): Promise<void> => {
+const importDB = async (config: ArangoDBConfig,deleteDatabaseFirst = false,updateFoxxServiceToDB:boolean = true, relativePathToImportScript = ""): Promise<void> => {
 
   if(deleteDatabaseFirst){
     await deleteDatabase(config)
@@ -38,7 +38,8 @@ const importDB = async (config: ArangoDBConfig,deleteDatabaseFirst = false,updat
   // Decide whether to execute the windows script or the linux script
   let scriptExtension = (process.platform == 'win32') ? 'bat' : 'sh';
   let location = process.cwd();
-  let bat =  require.resolve(`${location}/node_modules/@bcc-code/arango-migrate/src/util_scripts/reset_test_db.${scriptExtension}`);
+  relativePathToImportScript = relativePathToImportScript === "" ? "/node_modules/@bcc-code/arango-migrate/src/util_scripts" : relativePathToImportScript
+  let bat =  require.resolve(`${location}${relativePathToImportScript}/reset_test_db.${scriptExtension}`);
    bat = `${bat} ${config.url} ${config.auth.username} ${config.databaseName} ${config.auth.password} "${config.testDataPath}"`
   // Execute the bat script
   try {
@@ -49,7 +50,10 @@ const importDB = async (config: ArangoDBConfig,deleteDatabaseFirst = false,updat
   }
 
   const migrationsPath = config.migrationsPath ? config.migrationsPath : ""
-  await MigrateWithConfig(Direction.Up, config,migrationsPath);
+  if(migrationsPath !=="") {
+    await MigrateWithConfig(Direction.Up, config,migrationsPath);
+  }
+  
   if(updateFoxxServiceToDB){
     await updateFoxxService(config, config.foxx?.mountPoint, config.foxx?.pathToManifest, config.foxx?.pathZipWithBuild)
   }
