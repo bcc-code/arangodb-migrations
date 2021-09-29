@@ -28,8 +28,10 @@ arangorestore \
   --server.database "$DATABASE" \
   --server.username "$USERNAME" \
   --server.password "$PASSWORD" \
-  --server.authentication true \
+  --server.authentication false \
   --server.endpoint "$URL" \
   --input-directory "$FULL_PATH_TO_TEST_DATA" \
-  --create-database true
+  --create-database true \
+  --include-system-collections true \
+  
 
