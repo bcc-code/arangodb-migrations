@@ -1,6 +1,6 @@
 {
   "name": "@bcc-code/arango-migrate",
-  "version": "0.9.18",
+  "version": "0.10.0",
   "description": "Migrate arango databases",
   "main": "lib/src/",
   "types": "lib/src/",
@@ -9,7 +9,7 @@
     "url": "https://github.com/bcc-code/arangodb-migrations/"
   },
   "scripts": {
-    "test": "nyc mocha -r ts-node/register 'tests/**/*.ts'",
+    "test": "nyc mocha -r ts-node/register 'tests/**/*.ts' --timeout 5000000",
     "clean": "shx rm -rf lib/ && shx rm -rf test/data/",
     "coverage": "nyc npm run mocha",
     "build": "tsc"

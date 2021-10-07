@@ -15,4 +15,5 @@ arangorestore ^
   --server.authentication true ^
   --server.endpoint %URL% ^
   --input-directory %PATH_TO_TEST_DATA% ^
-  --create-database true
+  --create-database true ^
+  --include-system-collections true

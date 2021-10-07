@@ -4,6 +4,11 @@ import { promisify } from 'util';
 import { Direction, MigrateWithConfig } from "./migrations";
 var fs = require('fs');
 
+
+/**
+ * @url url to the database for example tcp://127.0.0.1:8529
+ * @scriptsFolderPath directory of where the scripts are placed relative to the cwd, if no path is spesified a default path of 'node_modules/@bcc-code/arango-migrate/src/util_scripts/' will be used.
+ */
 export type ArangoDBConfig = {
     url:string,
     databaseName: string,
@@ -11,6 +16,7 @@ export type ArangoDBConfig = {
     foxx?:foxx,
     migrationsPath?:string,
     testDataPath?:string
+    scriptsFolderPath?:string
 }
 
 type auth = {
@@ -18,6 +24,12 @@ type auth = {
     password:string
 }
 
+ /**
+ * @param mountpoint - Link in the database under "Services" where the foxx service will be mounted
+ * should be relative to the location you have your package.json file in
+ * @param pathToManifest - Path to where the manifest file is being held to compare to the version in the db to see if there is a difference
+ * @param pathZipWithBuild - Path to the zip file that contains the build to upload to the db
+ */
 type foxx = {
     mountPoint?:string,
     pathToManifest?:string,
@@ -38,7 +50,8 @@ const importDB = async (config: ArangoDBConfig,deleteDatabaseFirst = false,updat
   // Decide whether to execute the windows script or the linux script
   let scriptExtension = (process.platform == 'win32') ? 'bat' : 'sh';
   let location = process.cwd();
-  let bat =  require.resolve(`${location}/node_modules/@bcc-code/arango-migrate/src/util_scripts/reset_test_db.${scriptExtension}`);
+  config.scriptsFolderPath = config.scriptsFolderPath === undefined ? "/node_modules/@bcc-code/arango-migrate/src/util_scripts" : config.scriptsFolderPath
+  let bat =  require.resolve(`${location}${config.scriptsFolderPath}/import-test-db.${scriptExtension}`);
    bat = `${bat} ${config.url} ${config.auth.username} ${config.databaseName} ${config.auth.password} "${config.testDataPath}"`
   // Execute the bat script
   try {
@@ -49,26 +62,23 @@ const importDB = async (config: ArangoDBConfig,deleteDatabaseFirst = false,updat
   }
 
   const migrationsPath = config.migrationsPath ? config.migrationsPath : ""
-  await MigrateWithConfig(Direction.Up, config,migrationsPath);
+  if(migrationsPath !=="") {
+    await MigrateWithConfig(Direction.Up, config,migrationsPath);
+  }
+  
   if(updateFoxxServiceToDB){
     await updateFoxxService(config, config.foxx?.mountPoint, config.foxx?.pathToManifest, config.foxx?.pathZipWithBuild)
   }
  }
 
- /**
- * This method assumes you have a database somewhere that contains test data.
- * @param dbConfig - Connection settings to connect to the ArangoDB database
- * @param mountpoint - Link in the database under "Services" where the foxx service will be mounted
- * should be relative to the location you have your package.json file in
- * @param pathToManifest - Path to where the manifest file is being held to compare to the version in the db to see if there is a difference
- * @param pathZipWithBuild - Path to the zip file that contains the build to upload to the db
- */
+
  const pullDownTestDataLocally = async (config: ArangoDBConfig): Promise<void> => {
 
     // Decide whether to execute the windows script or the linux script
     let scriptExtension = (process.platform == 'win32') ? 'bat' : 'sh';
     let location = process.cwd();
-    let bat =  require.resolve(`${location}/node_modules/@bcc-code/arango-migrate/src/util_scripts/update-test-data.${scriptExtension}`);
+    config.scriptsFolderPath = config.scriptsFolderPath === undefined ? "/node_modules/@bcc-code/arango-migrate/src/util_scripts" : config.scriptsFolderPath
+    let bat =  require.resolve(`${location}${config.scriptsFolderPath}/export-test-data.${scriptExtension}`);
      bat = `${bat} ${config.url} ${config.auth.username} ${config.databaseName} ${config.auth.password} "${config.testDataPath}"`
     // Execute the bat script
     try {
