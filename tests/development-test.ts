@@ -10,27 +10,7 @@ import {
 } from '../src/index';
 
 describe('Add-hock tests to help with development', async () => {
-
-    it.skip('Apply migrations upwards', async () => {
-        // Act
-        try {
-            await deleteDatabase(getDbConfig());
-            await MigrateWithConfig(Direction.Up, getDbConfig(), './src/db-migrations');
-            assert.isOk('The migraiton works');
-        } catch (error) {
-            assert.fail('Migration did not import successfully');
-        }
-    });
-
-    it.skip('Downgrade latest migration', async () => {
-        // Act
-        try {
-            await MigrateWithConfig(Direction.Down, getDbConfig(), './src/db-migrations');
-            assert.isOk('The migraiton works');
-        } catch (error) {
-            assert.fail('Migration did not import successfully');
-        }
-    });
+   
 
     it('Export test data', async () => {
 
@@ -49,7 +29,7 @@ describe('Add-hock tests to help with development', async () => {
         try {
             const config: ArangoDBConfig = getDbConfig()
 
-            await importDB(config,true,false,"/src/util_scripts");
+            await importDB(config,true,false);
             assert.isOk('Test data pulled down successfully');
         } catch (error) {
             assert.fail('There was a problem pulling down the test data');
@@ -72,7 +52,8 @@ function getDbConfig(): ArangoDBConfig {
                     password: password,
                     username: username,
                 },
-                testDataPath: '.\\test_set',
+                testDataPath: '\\test_set',
+                scriptsFolderPath: '/src/util_scripts'
             };
 
             return config;            
