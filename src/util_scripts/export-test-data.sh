@@ -22,11 +22,9 @@ echo Full path to test data: $FULL_PATH_TO_TEST_DATA
 rm $FULL_PATH_TO_TEST_DATA/*
 
 arangodump \
-  --server.database "$DATABASE" \ 
+  --server.database "$DATABASE" \
   --server.authentication false \
   --server.endpoint "$URL" \
   --output-directory "$FULL_PATH_TO_TEST_DATA" \
   --include-system-collections true \
   --compress-output false \
-
-
