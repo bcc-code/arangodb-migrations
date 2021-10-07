@@ -33,5 +33,3 @@ arangorestore \
   --input-directory "$FULL_PATH_TO_TEST_DATA" \
   --create-database true \
   --include-system-collections true \
-  
-
