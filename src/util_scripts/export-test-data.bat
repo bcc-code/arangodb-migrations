@@ -18,11 +18,11 @@ del /q %PATH_TO_TEST_DATA%\*
 
 arangodump  ^
   --server.database %DATABASE% ^
-  --server.username %USERNAME% ^
-  --server.password %PASSWORD% ^
-  --server.authentication "true" ^
+  --server.authentication "false" ^
   --server.endpoint %URL% ^
-  --output-directory %PATH_TO_TEST_DATA%
+  --output-directory %PATH_TO_TEST_DATA% ^
+  --include-system-collections "true" ^
+  --compress-output "false" 
 
 
 
