@@ -20,11 +20,12 @@ DATABASE="$3"
 PASSWORD="$4"
 RELATIVE_PATH_TO_TEST_DATA_WINDOWS_FORMAT="$5"
 RELATIVE_PATH_TO_TEST_DATA_LINUX_FORMAT=$(printf "%s" "$RELATIVE_PATH_TO_TEST_DATA_WINDOWS_FORMAT" | sed 's/\\/\//g')
+SILENT_OUTPUT="$6"
 
 FULL_PATH_TO_TEST_DATA="$(pwd)/$RELATIVE_PATH_TO_TEST_DATA_LINUX_FORMAT"
 echo Full path to test data: $FULL_PATH_TO_TEST_DATA
 
-if [ -n "$6" & "$6" == "true"]; then
+if [ -n "$SILENT_OUTPUT" & "$SILENT_OUTPUT" == "true"]; then
   arangorestore \
   --server.database "$DATABASE" \
   --server.username "$USERNAME" \
