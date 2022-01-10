@@ -41,7 +41,7 @@ type foxx = {
 // to finishnpm
 const execPromise = promisify(exec);
 
-const importDB = async (config: ArangoDBConfig,deleteDatabaseFirst = false,updateFoxxServiceToDB:boolean = true): Promise<void> => {
+const importDB = async (config: ArangoDBConfig,deleteDatabaseFirst = false,updateFoxxServiceToDB:boolean = true, silent:boolean = true): Promise<void> => {
 
   if(deleteDatabaseFirst){
     await deleteDatabase(config)
@@ -52,7 +52,12 @@ const importDB = async (config: ArangoDBConfig,deleteDatabaseFirst = false,updat
   let location = process.cwd();
   config.scriptsFolderPath = config.scriptsFolderPath === undefined ? "/node_modules/@bcc-code/arango-migrate/src/util_scripts" : config.scriptsFolderPath
   let bat =  require.resolve(`${location}${config.scriptsFolderPath}/import-test-db.${scriptExtension}`);
-   bat = `${bat} ${config.url} ${config.auth.username} ${config.databaseName} ${config.auth.password} "${config.testDataPath}"`
+  if(scriptExtension === 'sh'){
+    bat = `${bat} ${config.url} ${config.auth.username} ${config.databaseName} ${config.auth.password} "${config.testDataPath}" "${silent}"`
+  } else {
+    bat = `${bat} ${config.url} ${config.auth.username} ${config.databaseName} ${config.auth.password} "${config.testDataPath}"`
+  }
+   
   // Execute the bat script
   try {
     let stdout = await execPromise(bat)
