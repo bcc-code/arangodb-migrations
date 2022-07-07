@@ -1,15 +1,14 @@
 import 'mocha';
 import {assert} from 'chai';
 import {
-    Direction,
-    MigrateWithConfig,
-    deleteDatabase,
     pullDownTestDataLocally,
     ArangoDBConfig,
     importDB
 } from '../src/index';
+import logger, { useCustomLogger } from '../src/logger';
+import { createLogger, format, transports } from 'winston';
 
-describe('Add-hock tests to help with development', async () => {
+describe.skip('Add-hock tests to help with development', async () => {
    
 
     it('Export test data', async () => {
@@ -24,8 +23,13 @@ describe('Add-hock tests to help with development', async () => {
         }
     });
 
-    it.only('Import test data', async () => {
+    it('Import test data', async () => {        
+        let newLogger = createLogger({
+            transports: new transports.Console(),
+        });
+        useCustomLogger(newLogger)
 
+        logger.debug("New log")
         try {
             const config: ArangoDBConfig = getDbConfig()
 

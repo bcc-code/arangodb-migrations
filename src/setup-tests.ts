@@ -1,6 +1,7 @@
 import { Database } from "arangojs";
 import { exec } from 'child_process';
 import { promisify } from 'util';
+import logger from "./logger";
 import { Direction, MigrateWithConfig } from "./migrations";
 var fs = require('fs');
 
@@ -61,9 +62,10 @@ const importDB = async (config: ArangoDBConfig,deleteDatabaseFirst = false,updat
   // Execute the bat script
   try {
     let stdout = await execPromise(bat)
-    console.log('Test data was imported in the fresh database: ',stdout.stdout);
+    logger.debug('Test data was imported in the fresh database',{output: stdout.stdout});
   } catch (error) {
-    console.error('The import of test data failed with Error: ', error);
+
+    logger.error('The import of test data failed with Error', error);
   }
 
   const migrationsPath = config.migrationsPath ? config.migrationsPath : ""
@@ -88,9 +90,9 @@ const importDB = async (config: ArangoDBConfig,deleteDatabaseFirst = false,updat
     // Execute the bat script
     try {
       let stdout = await execPromise(bat)
-      console.log('Test data was PULLED down from the template DB: ',stdout.stdout);
+      logger.debug('Test data was PULLED down from the template DB: ',{ output: stdout.stdout});
     } catch (error) {
-      console.error('The script FAILED to pull down the test data: ', error);
+      logger.error('The script FAILED to pull down the test data', error);
     }
 }
 
@@ -105,10 +107,10 @@ async function deleteDatabase(config: ArangoDBConfig) {
 
     try {
         let result = await systemDB.dropDatabase(dbToDelete.name)
-        console.log('Test database deleted: ',result)
+        logger.debug('Test database deleted: ',result)
         systemDB.close();
-    } catch (error) {
-        console.error('The database didnt exist, so it couldnt be deleted',error)
+    } catch (error: any) {
+        logger.error('The database didnt exist, so it couldnt be deleted', error)
     }
 
     // Dropping a database happens asyncronisly so we should wait a litte bit
@@ -117,9 +119,9 @@ async function deleteDatabase(config: ArangoDBConfig) {
     while (exists) {
         await snooze(200)
         exists = await dbToDelete.exists()
-        console.log('exists: ',exists)
+        logger.debug('exists: ',exists)
     }
-    console.log('exists: ',exists)
+    logger.debug('exists: ',exists)
 }
 
 /**
@@ -145,9 +147,9 @@ async function deleteDatabase(config: ArangoDBConfig) {
         mountpoint,
         fs.readFileSync(pathZipWithBuild) //'../db/dist.zip'
         );
-        console.log(`Foxx app for ${db.name} have been updated to version ${latestversion}`)
+        logger.debug(`Foxx app for ${db.name} have been updated to version ${latestversion}`)
     }
-    console.log(`Foxx app for ${db.name} is up to date on version ${latestversion}`)
+    logger.debug(`Foxx app for ${db.name} is up to date on version ${latestversion}`)
 
     } catch (error) {
 
@@ -155,7 +157,7 @@ async function deleteDatabase(config: ArangoDBConfig) {
         mountpoint,
         fs.readFileSync(pathZipWithBuild)
     );
-    console.log(`Foxx app for ${db.name} have been installed on version ${latestversion}`)
+    logger.debug(`Foxx app for ${db.name} have been installed on version ${latestversion}`)
   }
 }
 

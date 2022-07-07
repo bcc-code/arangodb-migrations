@@ -2,6 +2,7 @@ import { ArrayCursor } from "arangojs/cursor";
 import { existsSync, readdirSync } from 'fs';
 import { Database } from "arangojs";
 import { Direction, DropExt, FilterAndSortFiles, Migration, FileNameToRevNumber, MigrationStatus, GetMigrationsAfterRev } from './migration-functions';
+import logger from "./logger";
 
 const COLLECTION = "migration_status";
 
@@ -38,7 +39,7 @@ const Migrate = async (direction: Direction, db: Database, migrationPath: string
 	await Promise.all(gatherMigrations)
 
 	if (!(await db.exists())) {
-		console.info("Database does not exist. Attempting to create");
+		logger.debug("Database does not exist. Attempting to create");
 
 		// In arango you have to connect to an existing DB in order to be able to create a new one
 		const systemDb = db.database("_system");
@@ -66,7 +67,7 @@ const Migrate = async (direction: Direction, db: Database, migrationPath: string
 	if (direction == Direction.Up) {
 		const migrationsToRun = GetMigrationsAfterRev(migrations, current_version);
 		if (migrationsToRun.length === 0) {
-			console.log("Nothing to do with migrations");
+			logger.debug("Nothing to do with migrations");
 			return
 		}
 
@@ -85,12 +86,12 @@ const Migrate = async (direction: Direction, db: Database, migrationPath: string
 			status.timestamp = (new Date()).toISOString()
 
 			await collection.save(status, {returnNew: true}) // TODO: What if this fails?
-			console.log(`Database upgraded to revision ${migration.targetRevision}`);
+			logger.debug(`Database upgraded to revision ${migration.targetRevision}`);
 		}
 
 	} else if (direction == Direction.Down) {
 		if (current_version === 0) {
-			console.info("Can not migrate down past 0");
+			logger.debug("Can not migrate down past 0");
 			return
 		}
 
@@ -111,10 +112,10 @@ const Migrate = async (direction: Direction, db: Database, migrationPath: string
 		status.timestamp = (new Date()).toISOString()
 
 		await collection.save(status, {returnNew: true}) // TODO: What if this fails?
-		console.log(`Database downgraded to revision ${migration.targetRevision}`);
+		logger.debug(`Database downgraded to revision ${migration.targetRevision}`);
 	}
 
-	console.log(`Done, DB at revision ${current_version}`);
+	logger.debug(`Done, DB at revision ${current_version}`);
 }
 
 
