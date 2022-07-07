@@ -60,7 +60,7 @@ const up  = async (db: Database) : Promise<Boolean> => {
         if(!await db.collection('country').exists()) await db.collection('person').create()
         return true
   } catch (error) {
-        console.log('There was an error with running migration 001: ',error)
+        logger.debug('There was an error with running migration 001: ',error)
         return false;
   }
 };
@@ -70,7 +70,7 @@ const down = async (db: Database) => {
         const countryResult1 = await db.collection('country').drop()      
         return true
   } catch (error) {
-        console.log('There was an error with downgrading migration 001: ',error)
+        logger.debug('There was an error with downgrading migration 001: ',error)
         return false;
   }
 };
