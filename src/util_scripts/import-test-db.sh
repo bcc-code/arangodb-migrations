@@ -25,19 +25,7 @@ SILENT_OUTPUT="$6"
 FULL_PATH_TO_TEST_DATA="$(pwd)/$RELATIVE_PATH_TO_TEST_DATA_LINUX_FORMAT"
 echo Full path to test data: $FULL_PATH_TO_TEST_DATA
 
-if [ -n "$SILENT_OUTPUT" & "$SILENT_OUTPUT" == "true"]; then
-  arangorestore \
-  --server.database "$DATABASE" \
-  --server.username "$USERNAME" \
-  --server.password "$PASSWORD" \
-  --server.authentication false \
-  --server.endpoint "$URL" \
-  --input-directory "$FULL_PATH_TO_TEST_DATA" \
-  --create-database true \
-  --include-system-collections true \
-  > /dev/null
-else
-  arangorestore \
+arangorestore \
   --server.database "$DATABASE" \
   --server.username "$USERNAME" \
   --server.password "$PASSWORD" \
@@ -46,4 +34,3 @@ else
   --input-directory "$FULL_PATH_TO_TEST_DATA" \
   --create-database true \
   --include-system-collections true
-fi
