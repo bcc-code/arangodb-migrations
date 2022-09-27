@@ -54,9 +54,9 @@ const importDB = async (config: ArangoDBConfig,deleteDatabaseFirst = false,updat
   config.scriptsFolderPath = config.scriptsFolderPath === undefined ? "/node_modules/@bcc-code/arango-migrate/src/util_scripts" : config.scriptsFolderPath
   let bat =  require.resolve(`${location}${config.scriptsFolderPath}/import-test-db.${scriptExtension}`);
   if(scriptExtension === 'sh'){
-    bat = `${bat} ${config.url} ${config.auth.username} ${config.databaseName} ${config.auth.password} "${config.testDataPath}" "${silent}"`
+    bat = `${bat} ${transformArangoUrlScheme(config.url)} ${config.auth.username} ${config.databaseName} ${config.auth.password} "${config.testDataPath}" "${silent}"`
   } else {
-    bat = `${bat} ${config.url} ${config.auth.username} ${config.databaseName} ${config.auth.password} "${config.testDataPath}"`
+    bat = `${bat} ${transformArangoUrlScheme(config.url)} ${config.auth.username} ${config.databaseName} ${config.auth.password} "${config.testDataPath}"`
   }
    
   // Execute the bat script
@@ -161,11 +161,17 @@ async function deleteDatabase(config: ArangoDBConfig) {
   }
 }
 
-
+function transformArangoUrlScheme(url: string): string {
+  if (url.startsWith("https")) {
+    return url.replace("https", "http+ssl");
+  }  
+  return url;
+}
 
 export {
   importDB,
   deleteDatabase,
   updateFoxxService,
-  pullDownTestDataLocally
+  pullDownTestDataLocally,
+  transformArangoUrlScheme
 }
