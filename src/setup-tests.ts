@@ -42,7 +42,7 @@ type foxx = {
 // to finishnpm
 const execPromise = promisify(exec);
 
-const importDB = async (config: ArangoDBConfig,deleteDatabaseFirst = false,updateFoxxServiceToDB:boolean = true, silent:boolean = true): Promise<void> => {
+const importDB = async (config: ArangoDBConfig,deleteDatabaseFirst = false,updateFoxxServiceToDB:boolean = false, silent:boolean = true): Promise<void> => {
 
   if(deleteDatabaseFirst){
     await deleteDatabase(config)
