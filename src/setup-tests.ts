@@ -1,6 +1,5 @@
 import { Database } from "arangojs";
 import { execSync } from 'child_process';
-import { promisify } from 'util';
 import logger from "./logger";
 import { Direction, MigrateWithConfig } from "./migrations";
 import fs from 'fs'
