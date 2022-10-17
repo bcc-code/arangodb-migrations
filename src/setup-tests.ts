@@ -1,9 +1,8 @@
 import { Database } from "arangojs";
-import { exec } from 'child_process';
-import { promisify } from 'util';
+import { execSync } from 'child_process';
 import logger from "./logger";
 import { Direction, MigrateWithConfig } from "./migrations";
-var fs = require('fs');
+import fs from 'fs'
 
 
 /**
@@ -37,34 +36,37 @@ type foxx = {
     pathZipWithBuild?:string
 }
 
-// `exec()` is async and does not return a promise...
-// This seems to be the accepted way to be able to wait for the execution
-// to finishnpm
-const execPromise = promisify(exec);
+interface ImportDBOptions {
+  deleteDatabaseFirst: boolean;
+  updateFoxxServiceToDB: boolean;
+  silent: boolean;
+  includeSystemCollections: boolean;
+  collections: string[]
+}
 
-const importDB = async (config: ArangoDBConfig,deleteDatabaseFirst = false,updateFoxxServiceToDB:boolean = false, silent:boolean = true): Promise<void> => {
+const importDB = async (config: ArangoDBConfig, options: Partial<ImportDBOptions> = {}): Promise<void> => {
 
-  if(deleteDatabaseFirst){
+  if(options.deleteDatabaseFirst){
     await deleteDatabase(config)
   }
 
-  // Decide whether to execute the windows script or the linux script
-  let scriptExtension = (process.platform == 'win32') ? 'bat' : 'sh';
-  let location = process.cwd();
-  config.scriptsFolderPath = config.scriptsFolderPath === undefined ? "/node_modules/@bcc-code/arango-migrate/src/util_scripts" : config.scriptsFolderPath
-  let bat =  require.resolve(`${location}${config.scriptsFolderPath}/import-test-db.${scriptExtension}`);
-  if(scriptExtension === 'sh'){
-    bat = `${bat} ${transformArangoUrlScheme(config.url)} ${config.auth.username} ${config.databaseName} ${config.auth.password} "${config.testDataPath}" "${silent}"`
-  } else {
-    bat = `${bat} ${transformArangoUrlScheme(config.url)} ${config.auth.username} ${config.databaseName} ${config.auth.password} "${config.testDataPath}"`
-  }
-   
-  // Execute the bat script
-  try {
-    let stdout = await execPromise(bat)
-    logger.debug('Test data was imported in the fresh database',{output: stdout.stdout});
-  } catch (error) {
+  let command = `arangorestore \\
+      --server.endpoint "${transformArangoUrlScheme(config.url)}" \\
+      --server.database "${config.databaseName}" \\
+      --server.username "${config.auth.username}" \\
+      --server.password "${config.auth.password}" \\
+      --input-directory "${config.testDataPath}" \\
+      --create-database "true" \\
+      --include-system-collections "${options.includeSystemCollections ?? false}"`
 
+  if(options.collections) {
+    const collectionsCommand = options.collections.map(c => ` --collection ${c}`).join(" ");
+    command += collectionsCommand;
+  }
+  try {
+    let output = execSync(command)
+    logger.debug(output.toString());
+  } catch (error) {
     logger.error('The import of test data failed with Error', error);
   }
 
@@ -73,24 +75,27 @@ const importDB = async (config: ArangoDBConfig,deleteDatabaseFirst = false,updat
     await MigrateWithConfig(Direction.Up, config,migrationsPath);
   }
   
-  if(updateFoxxServiceToDB){
+  if(options.updateFoxxServiceToDB){
     await updateFoxxService(config, config.foxx?.mountPoint, config.foxx?.pathToManifest, config.foxx?.pathZipWithBuild)
   }
  }
 
-
  const pullDownTestDataLocally = async (config: ArangoDBConfig): Promise<void> => {
 
-    // Decide whether to execute the windows script or the linux script
-    let scriptExtension = (process.platform == 'win32') ? 'bat' : 'sh';
-    let location = process.cwd();
-    config.scriptsFolderPath = config.scriptsFolderPath === undefined ? "/node_modules/@bcc-code/arango-migrate/src/util_scripts" : config.scriptsFolderPath
-    let bat =  require.resolve(`${location}${config.scriptsFolderPath}/export-test-data.${scriptExtension}`);
-     bat = `${bat} ${config.url} ${config.auth.username} ${config.databaseName} ${config.auth.password} "${config.testDataPath}"`
-    // Execute the bat script
+
+  let command = `arangodump \\
+    --server.endpoint "${transformArangoUrlScheme(config.url)}" \\
+    --server.database "${config.databaseName}" \\
+    --server.username "${config.auth.username}" \\
+    --server.password "${config.auth.password}" \\
+    --output-directory "${config.testDataPath}" \\
+    --include-system-collections "true" \\
+    --compress-output "false" \\
+    --overwrite true`
+
     try {
-      let stdout = await execPromise(bat)
-      logger.debug('Test data was PULLED down from the template DB: ',{ output: stdout.stdout});
+      let output = execSync(command)
+      logger.debug(output.toString());
     } catch (error) {
       logger.error('The script FAILED to pull down the test data', error);
     }
@@ -113,7 +118,7 @@ async function deleteDatabase(config: ArangoDBConfig) {
         logger.error('The database didnt exist, so it couldnt be deleted', error)
     }
 
-    // Dropping a database happens asyncronisly so we should wait a litte bit
+    // Dropping a database happens asynchronously so we should wait a litte bit
     // and confirm that db has been deleted
     let exists = await dbToDelete.exists()
     while (exists) {

@@ -1,6 +1,6 @@
 {
   "name": "@bcc-code/arango-migrate",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Migrate arango databases",
   "main": "lib/src/",
   "types": "lib/src/",

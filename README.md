@@ -1,6 +1,9 @@
 # arangodb-migrations
 Runs arango db scripts to bring the arangoDB instance up to the correct state in your project.
 
+# Compatibility
+The package currently only supports UNIX based operating systems. If you are using Windows consider switching to an UNIX based OS or using WSL.
+
 # Introduction
 This library aims to solve some common needs around ArangoDB like 
 - How do you keep your database changes consistent accross different environments?
@@ -9,7 +12,7 @@ This library aims to solve some common needs around ArangoDB like
 
 # Usage
 ## Setup
-```ps
+```sh
 npm install @bcc-its/arango-migrate --save
 ```
 `Note: make sure you have this line in your .npmrc file, @bcc-code:registry=https://npm.pkg.github.com/, otherwise npm won't find the package`
