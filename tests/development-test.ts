@@ -8,7 +8,7 @@ import {
 import { useCustomLogger } from '../src/logger';
 import { createLogger, format, transports } from 'winston';
 
-describe.skip('Add-hock tests to help with development', async () => {
+describe.skip('Ad hoc tests to help with development', async () => {
 
     it('Export test data', async () => {
 
