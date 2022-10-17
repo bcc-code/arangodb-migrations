@@ -8,10 +8,9 @@ import {
 import { useCustomLogger } from '../src/logger';
 import { createLogger, format, transports } from 'winston';
 
-describe('Add-hock tests to help with development', async () => {
-   
+describe.skip('Add-hock tests to help with development', async () => {
 
-    it.only('Export test data', async () => {
+    it('Export test data', async () => {
 
         try {
             const config: ArangoDBConfig = getDbConfig()
