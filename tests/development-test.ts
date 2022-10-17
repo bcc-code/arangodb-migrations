@@ -5,13 +5,13 @@ import {
     ArangoDBConfig,
     importDB
 } from '../src/index';
-import logger, { useCustomLogger } from '../src/logger';
+import { useCustomLogger } from '../src/logger';
 import { createLogger, format, transports } from 'winston';
 
-describe.skip('Add-hock tests to help with development', async () => {
+describe('Add-hock tests to help with development', async () => {
    
 
-    it('Export test data', async () => {
+    it.only('Export test data', async () => {
 
         try {
             const config: ArangoDBConfig = getDbConfig()
@@ -29,11 +29,14 @@ describe.skip('Add-hock tests to help with development', async () => {
         });
         useCustomLogger(newLogger)
 
-        logger.debug("New log")
         try {
             const config: ArangoDBConfig = getDbConfig()
 
-            await importDB(config,true,false);
+            await importDB(config,{
+                deleteDatabaseFirst: false,
+                updateFoxxServiceToDB: false,
+                includeSystemCollections: true,
+            });
             assert.isOk('Test data pulled down successfully');
         } catch (error) {
             assert.fail('There was a problem pulling down the test data');
@@ -43,27 +46,22 @@ describe.skip('Add-hock tests to help with development', async () => {
 
 
 function getDbConfig(): ArangoDBConfig {
-        const password = 'root';
-        const username = 'root';
-        const url = 'tcp://127.0.0.1:8529/';
-        const db = 'MIGRATE_TEST';
+    const password = 'root';
+    const username = 'root';
+    const url = 'tcp://127.0.0.1:8529/';
+    const db = 'MIGRATE_TEST';
 
-        try {
-            const config: ArangoDBConfig = {
-                databaseName: db,
-                url: url,
-                auth: {
-                    password: password,
-                    username: username,
-                },
-                testDataPath: '\\test_set',
-                scriptsFolderPath: '/src/util_scripts'
-            };
+    const config: ArangoDBConfig = {
+        databaseName: db,
+        url: url,
+        auth: {
+            password: password,
+            username: username,
+        },
+        testDataPath: 'test_set',
+        scriptsFolderPath: '/src/util_scripts'
+    };
 
-            return config;            
-        } catch (error) {
-            assert.fail('There was a problem pulling down the test data');
-        }
+    return config;
 
-    
 }
