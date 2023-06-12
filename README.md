@@ -15,7 +15,6 @@ This library aims to solve some common needs around ArangoDB like
 ```sh
 npm install @bcc-its/arango-migrate --save
 ```
-`Note: make sure you have this line in your .npmrc file, @bcc-code:registry=https://npm.pkg.github.com/, otherwise npm won't find the package`
 
 ## Configuration
 - The below configuration assums you want to run the mirgration by simple passing in the file name to nodejs, this will give you the ability to run the mirgration right before you start your app, which is also recommended.
