@@ -1,6 +1,6 @@
 {
   "name": "@bcc-code/arango-migrate",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Migrate arango databases",
   "main": "lib/src/",
   "types": "lib/src/",
@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "arangojs": "^7.0.1",
-    "shx": "^0.3.2",
-    "winston": "^3.8.1"
+    "shx": "^0.4.0",
+    "winston": "^3.19.0"
   }
 }
